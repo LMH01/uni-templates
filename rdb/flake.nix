@@ -1,5 +1,5 @@
 {
-  description = "RDB Project 1";
+  description = "Nix flake for rdb dev";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
