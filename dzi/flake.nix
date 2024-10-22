@@ -20,9 +20,10 @@
       {
         devShells.default = pkgs.mkShell {
           venvDir = ".venv";
-          packages = [
-            (pkgs.python3.withPackages (ps: with ps; 
-             [
+          packages = with pkgs; [
+            just
+            (python3.withPackages (
+              ps: with ps; [
                 jupyter
                 conda
                 pip
@@ -39,4 +40,3 @@
       }
     );
 }
-
