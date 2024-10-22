@@ -4,12 +4,18 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
+      self,
       nixpkgs,
       flake-utils,
+      treefmt-nix,
       ...
     }:
     {
@@ -29,9 +35,12 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+
+        treefmt = (treefmt-nix.lib.evalModule pkgs ./treefmt.nix).config.build;
       in
       {
-        formatter = pkgs.nixfmt-rfc-style;
+        formatter = treefmt.wrapper;
+        checks.formatting = treefmt.check self;
 
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
