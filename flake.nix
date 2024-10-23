@@ -29,6 +29,11 @@
           path = ./dzi;
           description = "3rd Semester dzi Template";
         };
+        
+        rdb = {
+          path = ./rdb;
+          description = "rdb Template";
+        };
       };
     }
     // flake-utils.lib.eachDefaultSystem (
