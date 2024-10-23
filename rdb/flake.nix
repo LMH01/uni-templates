@@ -3,44 +3,32 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs =
-    inputs:
-    inputs.flake-parts.lib.mkFlake
+    {
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
       {
-        inherit inputs;
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            xorg.libXtst
+            xorg.libXxf86vm
+            libGL
+            maven
+            openjdk21
+            scenebuilder
+          ];
+
+          LD_LIBRARY_PATH = "${pkgs.xorg.libXtst}/lib/:${pkgs.xorg.libXxf86vm}/lib/:${pkgs.libGL}/lib/";
+        };
       }
-      {
-        systems = [
-          "x86_64-linux"
-          "aarch64-linux"
-          "x86_64-darwin"
-          "aarch64-darwin"
-        ];
-        perSystem =
-          {
-            config,
-            pkgs,
-            system,
-            self,
-            ...
-          }:
-          {
-            devShells.default = pkgs.mkShell {
-              buildInputs = with pkgs; [
-                xorg.libXtst
-                xorg.libXxf86vm
-                libGL
-                maven
-                openjdk21
-                scenebuilder
-              ];
-
-              LD_LIBRARY_PATH = "${pkgs.xorg.libXtst}/lib/:${pkgs.xorg.libXxf86vm}/lib/:${pkgs.libGL}/lib/";
-            };
-          };
-
-      };
+    );
 }
